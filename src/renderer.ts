@@ -170,7 +170,7 @@ export function renderBitmap(
   bitmap: Bitmap,
   config: RenderConfig
 ): BannerResult {
-  const { foregroundEmojis, backgroundEmoji, mode, theme } = config;
+  const { foregroundEmojis, backgroundEmoji, borderEmoji, mode, theme } = config;
 
   // Get theme emojis if applicable
   const emojis = theme === 'github'
@@ -179,20 +179,24 @@ export function renderBitmap(
 
   // Use background emoji or default
   const bgEmoji = backgroundEmoji || getBackgroundEmoji();
+  const border = borderEmoji ?? null;
 
   // Normalize cell width so backgrounds and foregrounds align visually
   const sampleEmojis = theme === 'github' ? emojis : foregroundEmojis;
-  const maxFgWidth = Math.max(...sampleEmojis.map(getDisplayWidth));
+  const widthCandidates = [...sampleEmojis, bgEmoji];
+  if (border) widthCandidates.push(border);
+  const maxWidth = Math.max(...widthCandidates.map(getDisplayWidth));
   // Anchor width to foreground so non-emoji backgrounds don't widen cells unexpectedly
-  const cellWidth = Math.max(maxFgWidth, 2);
+  const cellWidth = Math.max(maxWidth, 2);
   const paddedBackground = fitToWidth(bgEmoji, cellWidth);
+  const paddedBorder = border ? fitToWidth(border, cellWidth) : null;
 
   const height = bitmap.length;
   const width = height > 0 ? bitmap[0].length : 0;
 
   const random = new SeededRandom(42); // Fixed seed for reproducibility
 
-  const lines: string[] = [];
+  let lines: string[] = [];
 
   for (let row = 0; row < height; row++) {
     let line = '';
@@ -218,14 +222,26 @@ export function renderBitmap(
     lines.push(line);
   }
 
+  if (paddedBorder) {
+    const topBottom = paddedBorder.repeat(width + 2);
+    lines = [
+      topBottom,
+      ...lines.map((line) => paddedBorder + line + paddedBorder),
+      topBottom,
+    ];
+  }
+
+  const finalWidth = paddedBorder ? width + 2 : width;
+  const finalHeight = paddedBorder ? height + 2 : height;
   const text = lines.join('\n');
 
   return {
     text,
     backgroundEmoji: bgEmoji,
+    borderEmoji: border ?? undefined,
     bitmap,
-    width,
-    height,
+    width: finalWidth,
+    height: finalHeight,
   };
 }
 
@@ -283,11 +299,13 @@ export function createDefaultConfig(
   foregroundEmojis: string[],
   backgroundEmoji?: string,
   mode: EmojiMode = 'random',
-  theme: string = 'default'
+  theme: string = 'default',
+  borderEmoji?: string
 ): RenderConfig {
   return {
     foregroundEmojis,
     backgroundEmoji: backgroundEmoji || getBackgroundEmoji(),
+    borderEmoji,
     mode,
     theme: theme as RenderConfig['theme'],
   };

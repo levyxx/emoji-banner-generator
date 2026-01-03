@@ -40,12 +40,6 @@ export interface CLIOptions {
   emoji: string;
   /** Emoji to use for background (default: space) */
   background?: string;
-  /** Output directory for file output */
-  output?: string;
-  /** Enable animation mode */
-  animate?: boolean;
-  /** Animation speed in milliseconds */
-  speed?: number;
   /** Copy result to clipboard */
   copy?: boolean;
   /** Output format */
@@ -56,6 +50,8 @@ export interface CLIOptions {
   mode?: EmojiMode;
   /** Font to use for text rendering */
   font?: string;
+  /** Border option (boolean to use background, or emoji string) */
+  border?: boolean | string;
 }
 
 /**
@@ -66,6 +62,8 @@ export interface BannerResult {
   text: string;
   /** Background emoji used */
   backgroundEmoji: string;
+  /** Border emoji used (if any) */
+  borderEmoji?: string;
   /** The bitmap data */
   bitmap: Bitmap;
   /** Width of the banner in characters */
@@ -111,6 +109,8 @@ export interface RenderConfig {
   foregroundEmojis: string[];
   /** Emoji for background */
   backgroundEmoji: string;
+  /** Emoji for border (if provided) */
+  borderEmoji?: string;
   /** Emoji selection mode */
   mode: EmojiMode;
   /** Theme to apply */

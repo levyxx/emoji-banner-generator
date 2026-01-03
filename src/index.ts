@@ -9,8 +9,6 @@ import { createCLI, parseCLIOptions, validateOptions } from './cli.js';
 import { textToBitmap } from './bitmap.js';
 import { parseEmojis, resolveEmoji } from './emoji.js';
 import { renderBitmap, createDefaultConfig } from './renderer.js';
-import { runAnimation } from './animation.js';
-import { saveToFile } from './output.js';
 import { copyToClipboard } from './clipboard.js';
 import { generateSlackJson } from './slack.js';
 import { getThemeBackground } from './themes.js';
@@ -56,6 +54,15 @@ async function generateBanner(options: CLIOptions): Promise<BannerResult> {
       ? getThemeBackground('github')
       : undefined;
 
+  // Determine border emoji (optional)
+  let borderEmoji: string | undefined;
+  if (options.border) {
+    if (!backgroundEmoji) {
+      throw new Error('Border requires a background emoji. Specify --background <emoji>.');
+    }
+    borderEmoji = typeof options.border === 'string' ? resolveEmoji(options.border) : backgroundEmoji;
+  }
+
   // Convert text to bitmap
   const bitmap = await textToBitmap(text, options.font);
 
@@ -64,7 +71,8 @@ async function generateBanner(options: CLIOptions): Promise<BannerResult> {
     foregroundEmojis,
     backgroundEmoji,
     options.mode,
-    options.theme
+    options.theme,
+    borderEmoji
   );
 
   // Render bitmap to emoji text
@@ -87,14 +95,6 @@ async function handleOutput(
     outputText = generateSlackJson(result);
   }
 
-  // Handle file output
-  if (options.output) {
-    const filename = options.format === 'slack' ? 'banner.json' : 'banner.txt';
-    const savedPath = await saveToFile(result, options.output, filename);
-    console.log(`✅ Saved to: ${savedPath}`);
-  }
-
-  // Handle clipboard copy
   if (options.copy) {
     try {
       await copyToClipboard(outputText);
@@ -105,20 +105,8 @@ async function handleOutput(
     }
   }
 
-  // Handle animation or standard output
-  if (options.animate && options.format !== 'slack') {
-    // Show banner info first
-    console.log(`\n🎬 Starting animation (Ctrl+C to stop)...\n`);
-    
-    // Run animation
-    await runAnimation(result.text, {
-      speed: options.speed,
-      terminalWidth: process.stdout.columns || 80,
-    });
-  } else {
-    // Print result to stdout
-    console.log('\n' + outputText + '\n');
-  }
+  // Print result to stdout
+  console.log('\n' + outputText + '\n');
 }
 
 /**

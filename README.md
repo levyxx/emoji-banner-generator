@@ -6,7 +6,6 @@
 
 - 🔥 テキストを絵文字でビットマップ表示
 - 📋 ワンクリックでクリップボードにコピー
-- 🎬 電光掲示板風のアニメーション表示
 - 💬 Slack Block Kit JSON形式での出力
 - 🎨 GitHubコントリビューショングラフ風テーマ
 - 🌈 複数絵文字でのグラデーション表示
@@ -94,23 +93,6 @@ npx emoji-banner-generator "GitHub" --theme github
 npx emoji-banner-generator "Copy Me" -e 🎉 --copy
 ```
 
-### アニメーション表示
-
-```bash
-# 電光掲示板風にスクロールアニメーション
-npx emoji-banner-generator "Scrolling" -e 🚀 --animate
-
-# アニメーション速度を調整（ミリ秒）
-npx emoji-banner-generator "Fast" -e 🔥 --animate --speed 50
-```
-
-### ファイル出力
-
-```bash
-# テキストファイルとして保存
-npx emoji-banner-generator "Save" -e 💾 --output ./output
-```
-
 ### ファイルからテキストを読み込み
 
 ```bash
@@ -132,13 +114,11 @@ npx emoji-banner-generator "Slack" -e 🎉 --format slack
 | `--emoji` | `-e` | 使用する絵文字（カンマ区切りで複数可） | 🔥 |
 | `--background` | `-b` | 背景の絵文字 | 空白 |
 | `--file` | `-f` | テキストを読み込むファイルパス | - |
-| `--output` | `-o` | ファイル出力先ディレクトリ | - |
-| `--animate` | `-a` | アニメーション表示を有効化 | false |
-| `--speed` | `-s` | アニメーション速度（ミリ秒） | 100 |
 | `--copy` | `-c` | クリップボードにコピー | false |
 | `--format` | - | 出力形式（text, slack） | text |
 | `--theme` | - | テーマ（default, github） | default |
 | `--mode` | `-m` | 絵文字選択モード | random |
+| `--border` | - | 外枠を付ける（絵文字省略時は背景と同じ絵文字を使用） | - |
 | `--font` | - | 使用するピクセルフォント名 | block |
 | `--help` | `-h` | ヘルプを表示 | - |
 | `--version` | `-V` | バージョンを表示 | - |

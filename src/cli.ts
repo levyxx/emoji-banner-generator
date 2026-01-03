@@ -51,9 +51,6 @@ export function createCLI(): Command {
     .option('-e, --emoji <emoji>', 'Emoji to use (can be emoji or alias, comma-separated for multiple)', '🔥')
     .option('-b, --background <emoji>', 'Background emoji (default: space)')
     .option('-f, --file <path>', 'Read text from file instead of argument')
-    .option('-o, --output <dir>', 'Output directory for file output')
-    .option('-a, --animate', 'Enable scrolling animation')
-    .option('-s, --speed <ms>', 'Animation speed in milliseconds', '100')
     .option('-c, --copy', 'Copy result to clipboard')
     .option('--format <format>', 'Output format (text, slack)', 'text')
     .option('--theme <theme>', 'Theme to use (default, github)', 'default')
@@ -63,6 +60,10 @@ export function createCLI(): Command {
       'random'
     )
     .option('--font <font>', 'Pixel font to use', DEFAULT_FONT_NAME)
+    .option(
+      '--border [emoji]',
+      'Add an outer border. Emoji optional; defaults to the background emoji when omitted.'
+    )
     .addHelpText(
       'after',
       `
@@ -132,25 +133,17 @@ export async function parseCLIOptions(program: Command): Promise<CLIOptions> {
     );
   }
 
-  // Parse speed
-  const speed = parseInt(opts.speed, 10);
-  if (isNaN(speed) || speed < 10) {
-    throw new Error('Speed must be a number >= 10');
-  }
-
   return {
     text,
     file: opts.file,
     emoji: opts.emoji,
     background: opts.background,
-    output: opts.output,
-    animate: opts.animate || false,
-    speed,
     copy: opts.copy || false,
     format,
     theme,
     mode,
     font: opts.font,
+    border: opts.border,
   };
 }
 
@@ -213,5 +206,12 @@ export function validateOptions(options: CLIOptions): void {
 
   if (!options.emoji) {
     throw new Error('Emoji is required. Use --emoji option.');
+  }
+
+  if (options.border) {
+    const backgroundProvided = Boolean(options.background) || options.theme === 'github';
+    if (!backgroundProvided) {
+      throw new Error('Border requires a background emoji. Specify --background <emoji>.');
+    }
   }
 }
