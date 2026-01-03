@@ -36,19 +36,23 @@ export function createCLI(): Command {
   const program = new Command();
 
   program
-    .name('emoji-banner')
+    .name('emjtxt')
     .description(
       'Convert text to emoji banner art for CLI display\n\n' +
-      'Examples:\n' +
-      '  $ emoji-banner "Hello" -e 🔥\n' +
-      '  $ emoji-banner "World" -e fire\n' +
-      '  $ emoji-banner "Test" -e "🔥,⭐,💎" -m row-gradient\n' +
-      '  $ emoji-banner "GitHub" --theme github\n' +
-      '  $ emoji-banner "Slack" -e 🎉 --format slack'
+        'Examples:\n' +
+        '  $ emjtxt "Hello" -e 🔥\n' +
+        '  $ emjtxt "World" -e fire\n' +
+        '  $ emjtxt "Test" -e "🔥,⭐,💎" -m row-gradient\n' +
+        '  $ emjtxt "GitHub" --theme github\n' +
+        '  $ emjtxt "Slack" -e 🎉 --format slack'
     )
     .version('1.0.0')
     .argument('[text]', 'Text to convert to emoji banner')
-    .option('-e, --emoji <emoji>', 'Emoji to use (can be emoji or alias, comma-separated for multiple)', '🔥')
+    .option(
+      '-e, --emoji <emoji>',
+      'Emoji to use (can be emoji or alias, comma-separated for multiple)',
+      '🔥'
+    )
     .option('-b, --background <emoji>', 'Background emoji (default: space)')
     .option('-f, --file <path>', 'Read text from file instead of argument')
     .option('-c, --copy', 'Copy result to clipboard')
@@ -164,10 +168,10 @@ async function readTextFromFile(filePath: string): Promise<string> {
   try {
     // Check file exists and is readable
     await fs.access(filePath, fs.constants.R_OK);
-    
+
     // Get file stats
     const stats = await fs.stat(filePath);
-    
+
     // Limit file size (1MB max)
     const maxSize = 1024 * 1024;
     if (stats.size > maxSize) {
@@ -176,7 +180,7 @@ async function readTextFromFile(filePath: string): Promise<string> {
 
     // Read file content
     const content = await fs.readFile(filePath, 'utf-8');
-    
+
     // Return trimmed content
     return content.trim();
   } catch (error) {
@@ -200,7 +204,7 @@ export function validateOptions(options: CLIOptions): void {
   if (!options.text && !options.file) {
     throw new Error(
       'Text is required. Provide text as an argument or use --file option.\n' +
-      'Run with --help for usage information.'
+        'Run with --help for usage information.'
     );
   }
 
@@ -209,9 +213,12 @@ export function validateOptions(options: CLIOptions): void {
   }
 
   if (options.border) {
-    const backgroundProvided = Boolean(options.background) || options.theme === 'github';
+    const backgroundProvided =
+      Boolean(options.background) || options.theme === 'github';
     if (!backgroundProvided) {
-      throw new Error('Border requires a background emoji. Specify --background <emoji>.');
+      throw new Error(
+        'Border requires a background emoji. Specify --background <emoji>.'
+      );
     }
   }
 }

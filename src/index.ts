@@ -43,10 +43,10 @@ async function main(): Promise<void> {
  */
 async function generateBanner(options: CLIOptions): Promise<BannerResult> {
   const text = options.text!;
-  
+
   // Parse emojis (supports comma-separated multiple emojis)
   const foregroundEmojis = parseEmojis(options.emoji);
-  
+
   // Parse background emoji if provided
   const backgroundEmoji = options.background
     ? resolveEmoji(options.background)
@@ -58,9 +58,14 @@ async function generateBanner(options: CLIOptions): Promise<BannerResult> {
   let borderEmoji: string | undefined;
   if (options.border) {
     if (!backgroundEmoji) {
-      throw new Error('Border requires a background emoji. Specify --background <emoji>.');
+      throw new Error(
+        'Border requires a background emoji. Specify --background <emoji>.'
+      );
     }
-    borderEmoji = typeof options.border === 'string' ? resolveEmoji(options.border) : backgroundEmoji;
+    borderEmoji =
+      typeof options.border === 'string'
+        ? resolveEmoji(options.border)
+        : backgroundEmoji;
   }
 
   // Convert text to bitmap
@@ -100,8 +105,10 @@ async function handleOutput(
       await copyToClipboard(outputText);
       console.log('📋 Copied to clipboard!');
     } catch (error) {
-      console.warn('⚠️  Could not copy to clipboard:', 
-        error instanceof Error ? error.message : 'Unknown error');
+      console.warn(
+        '⚠️  Could not copy to clipboard:',
+        error instanceof Error ? error.message : 'Unknown error'
+      );
     }
   }
 
@@ -117,8 +124,8 @@ function handleError(error: unknown): void {
     // Check for specific error types
     if (error.message.includes('Text is required')) {
       console.error('❌ Error:', error.message);
-      console.error('\nUsage: emoji-banner <text> -e <emoji>');
-      console.error('       emoji-banner --help for more information');
+      console.error('\nUsage: emjtxt <text> -e <emoji>');
+      console.error('       emjtxt --help for more information');
     } else if (error.message.includes('Invalid')) {
       console.error('❌ Validation Error:', error.message);
     } else {

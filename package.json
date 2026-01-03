@@ -23,16 +23,16 @@
     "text-to-emoji",
     "slack"
   ],
-  "author": "Your Name <your.email@example.com>",
+  "author": "levyxx <rb.06p.8046@s.thers.ac.jp>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/emoji-banner-generator.git"
+    "url": "git+https://github.com/levyxx/emoji-banner-generator.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/emoji-banner-generator/issues"
+    "url": "https://github.com/levyxx/emoji-banner-generator/issues"
   },
-  "homepage": "https://github.com/yourusername/emoji-banner-generator#readme",
+  "homepage": "https://github.com/levyxx/emoji-banner-generator#readme",
   "files": [
     "dist",
     "README.md"
