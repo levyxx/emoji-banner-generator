@@ -1,4 +1,4 @@
-# 🎨 Emoji Banner Generator
+# 🎨 EmojTxT
 
 テキストを絵文字バナーアートに変換するCLIツールです。
 
@@ -138,8 +138,8 @@ npx emjtxt "Slack" -e 🎉 --format slack
 ### 開発環境のセットアップ
 
 ```bash
-git clone https://github.com/yourusername/emoji-banner-generator.git
-cd emoji-banner-generator
+git clone https://github.com/yourusername/emjtxt.git
+cd emjtxt
 npm install
 ```
 
