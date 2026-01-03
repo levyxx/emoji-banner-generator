@@ -9,7 +9,36 @@ import { getThemeEmojis } from './themes.js';
 
 // Minimal emoji / wide-char detection for width calculation
 const EMOJI_REGEX = /[\u{1F300}-\u{1FAFF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE0F}]/u;
+const EXTENDED_PICTO_REGEX = /\p{Extended_Pictographic}/u;
 const WIDE_CHAR_REGEX = /[\u3000\u3001-\u303F\u3040-\u30FF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/u;
+
+type MinimalSegmenter = {
+  segment: (value: string) => Iterable<{ segment: string }>;
+};
+
+const graphemeSegmenter = (() => {
+  try {
+    if (
+      typeof Intl !== 'undefined' &&
+      typeof (Intl as { Segmenter?: new (locale: string, options: { granularity: 'grapheme' }) => MinimalSegmenter })
+        .Segmenter === 'function'
+    ) {
+      return new (
+        Intl as { Segmenter: new (locale: string, options: { granularity: 'grapheme' }) => MinimalSegmenter }
+      ).Segmenter('en', { granularity: 'grapheme' });
+    }
+  } catch {
+    // ignore
+  }
+  return null;
+})();
+
+function getGraphemes(str: string): string[] {
+  if (graphemeSegmenter) {
+    return Array.from(graphemeSegmenter.segment(str), (segment) => segment.segment);
+  }
+  return [...str];
+}
 
 /**
  * Seeded random number generator for reproducible results
@@ -36,10 +65,10 @@ class SeededRandom {
  */
 function getDisplayWidth(str: string): number {
   let width = 0;
-  for (const char of [...str]) {
+  for (const char of getGraphemes(str)) {
     if (char === '\u3000') {
       width += 2;
-    } else if (EMOJI_REGEX.test(char) || WIDE_CHAR_REGEX.test(char)) {
+    } else if (EXTENDED_PICTO_REGEX.test(char) || EMOJI_REGEX.test(char) || WIDE_CHAR_REGEX.test(char)) {
       width += 2;
     } else {
       width += 1;
