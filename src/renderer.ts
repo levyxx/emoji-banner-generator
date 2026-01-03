@@ -16,6 +16,16 @@ type MinimalSegmenter = {
   segment: (value: string) => Iterable<{ segment: string }>;
 };
 
+function isLikelyCustomEmoji(value: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed) return false;
+  if (EXTENDED_PICTO_REGEX.test(trimmed) || EMOJI_REGEX.test(trimmed) || WIDE_CHAR_REGEX.test(trimmed)) {
+    return false;
+  }
+  // Treat colon-wrapped or simple alias-like tokens as custom emoji (Slack-style)
+  return /^:?[a-zA-Z0-9_-]{1,64}:?$/.test(trimmed) && !/\s/.test(trimmed);
+}
+
 const graphemeSegmenter = (() => {
   try {
     if (
@@ -64,6 +74,9 @@ class SeededRandom {
  * Approximate display width (emoji treated as double-width).
  */
 function getDisplayWidth(str: string): number {
+  if (isLikelyCustomEmoji(str)) {
+    return 2;
+  }
   let width = 0;
   for (const char of getGraphemes(str)) {
     if (char === '\u3000') {
