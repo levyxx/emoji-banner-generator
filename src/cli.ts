@@ -68,6 +68,7 @@ export function createCLI(): Command {
       '--border [emoji]',
       'Add an outer border. Emoji optional; defaults to the background emoji when omitted.'
     )
+    .option('--vertical', 'Render text vertically (one character per line)')
     .addHelpText(
       'after',
       `
@@ -147,6 +148,7 @@ export async function parseCLIOptions(program: Command): Promise<CLIOptions> {
     theme,
     mode,
     font: opts.font,
+    vertical: Boolean(opts.vertical),
     border: opts.border,
   };
 }

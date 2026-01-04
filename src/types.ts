@@ -50,6 +50,8 @@ export interface CLIOptions {
   mode?: EmojiMode;
   /** Font to use for text rendering */
   font?: string;
+  /** Render text vertically (one character per line) */
+  vertical?: boolean;
   /** Border option (boolean to use background, or emoji string) */
   border?: boolean | string;
 }

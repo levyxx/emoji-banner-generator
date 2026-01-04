@@ -12,6 +12,72 @@ import {
 } from './fonts.js';
 
 const MAX_TEXT_LENGTH = 100;
+type TextToBitmapOptions = {
+  vertical?: boolean;
+};
+
+/**
+ * Interpret escape sequences for newlines and backslashes.
+ */
+function decodeEscapes(text: string): string {
+  let result = '';
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (char !== '\\') {
+      result += char;
+      continue;
+    }
+
+    const next = text[i + 1];
+    if (next === 'n') {
+      result += '\n';
+      i++;
+      continue;
+    }
+
+    if (next === '\\') {
+      result += '\\';
+      i++;
+      continue;
+    }
+
+    if (next !== undefined) {
+      result += '\\' + next;
+      i++;
+      continue;
+    }
+
+    // Trailing backslash, keep as-is
+    result += '\\';
+  }
+
+  return result;
+}
+
+/**
+ * Normalize text input:
+ * - Handle escaped newlines/backslashes
+ * - Normalize platform newlines
+ * - Optionally stack characters vertically
+ */
+function normalizeTextInput(text: string, vertical: boolean): string {
+  const decoded = decodeEscapes(text);
+  const normalizedNewlines = decoded.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+  if (!vertical) {
+    return normalizedNewlines;
+  }
+
+  const verticalizedLines = normalizedNewlines.split('\n').map((line) => {
+    if (line.length === 0) {
+      return '';
+    }
+    return Array.from(line).join('\n');
+  });
+
+  return verticalizedLines.join('\n\n');
+}
 
 /**
  * Clean up bitmap by removing empty rows at start and end
@@ -122,15 +188,18 @@ function mergeLines(lineBitmaps: Bitmap[], lineSpacing: number): Bitmap {
  */
 export async function textToBitmap(
   text: string,
-  fontName: string = DEFAULT_FONT_NAME
+  fontName: string = DEFAULT_FONT_NAME,
+  options: TextToBitmapOptions = {}
 ): Promise<Bitmap> {
   // Validate input
   if (!text || typeof text !== 'string') {
     throw new Error('Text input is required');
   }
 
-  // Sanitize input - remove control characters
-  const sanitizedText = text.replace(/[\x00-\x1F\x7F]/g, '');
+  const normalizedText = normalizeTextInput(text, options.vertical ?? false);
+
+  // Sanitize input - remove control characters except newlines
+  const sanitizedText = normalizedText.replace(/[\x00-\x09\x0B-\x1F\x7F]/g, '');
 
   if (sanitizedText.length === 0) {
     throw new Error('Text input is empty after sanitization');

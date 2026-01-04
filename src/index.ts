@@ -69,7 +69,9 @@ async function generateBanner(options: CLIOptions): Promise<BannerResult> {
   }
 
   // Convert text to bitmap
-  const bitmap = await textToBitmap(text, options.font);
+  const bitmap = await textToBitmap(text, options.font, {
+    vertical: options.vertical ?? false,
+  });
 
   // Create render config
   const config = createDefaultConfig(

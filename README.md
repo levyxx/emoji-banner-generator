@@ -9,6 +9,7 @@
 - 💬 Slack Block Kit JSON形式での出力
 - 🎨 GitHubコントリビューショングラフ風テーマ
 - 🌈 複数絵文字でのグラデーション表示
+- ↕️ 縦書きオプションで文字を積み上げ
 
 ## 📦 インストール
 
@@ -65,6 +66,19 @@ npx emjtxt "Rainbow" -e "🔴,🟠,🟡,🟢,🔵,🟣"
 npx emjtxt "Colors" -e "fire,star,gem,heart"
 ```
 
+### 改行や縦書きでの表示
+
+```bash
+# 通常モードでは \n を書くと改行できます
+npx emjtxt "Hello\nWorld" -e 🔥
+
+# バックスラッシュ自体を描画したい場合は \\ と入力してください
+npx emjtxt "C:\\Users\\you" -e ⭐
+
+# 縦書きで1文字ずつ積み上げる
+npx emjtxt "Vertical" -e 🔥 --vertical
+```
+
 ### 絵文字モード
 
 複数の絵文字を指定した場合の表示モードを選択できます：
@@ -118,6 +132,7 @@ npx emjtxt "Slack" -e 🎉 --format slack
 | `--format`     | -      | 出力形式（text, slack）                              | text       |
 | `--theme`      | -      | テーマ（default, github）                            | default    |
 | `--mode`       | `-m`   | 絵文字選択モード                                     | random     |
+| `--vertical`   | -      | 縦書きで表示（1文字ずつ改行）                        | false      |
 | `--border`     | -      | 外枠を付ける（絵文字省略時は背景と同じ絵文字を使用） | -          |
 | `--font`       | -      | 使用するピクセルフォント名                           | block      |
 | `--help`       | `-h`   | ヘルプを表示                                         | -          |
