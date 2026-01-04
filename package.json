@@ -1,6 +1,6 @@
 {
   "name": "emjtxt",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Convert text to emoji banner art for CLI display",
   "main": "dist/index.js",
   "bin": {
